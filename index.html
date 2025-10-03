@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Professional Address Manager</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 25px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+    
+    h2 {
+      text-align: center;
+      color: #2d3748;
+      margin-bottom: 25px;
+      font-size: 28px;
+      font-weight: 600;
+    }
+    
+    .address-card {
+      background: #fff;
+      margin-bottom: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .address-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    }
+    
+    .address-header {
+      font-size: 22px;
+      font-weight: bold;
+      padding: 15px;
+      color: #fff;
+      text-align: center;
+      background: linear-gradient(90deg, #FF9A8B 0%, #FF6A88 55%, #FF99AC 100%);
+    }
+    
+    .address-body {
+      display: flex;
+      flex-direction: row;
+      padding: 20px;
+      gap: 25px;
+    }
+    
+    .column {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    
+    .input-group {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .input-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: #4a5568;
+      margin-bottom: 5px;
+      padding-left: 3px;
+    }
+    
+    .address-form input, .address-form textarea {
+      width: 100%;
+      padding: 14px;
+      margin: 0;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 15px;
+      transition: border-color 0.3s, box-shadow 0.3s;
+      box-sizing: border-box;
+      min-height: 50px;
+    }
+    
+    .address-form input:focus, .address-form textarea:focus {
+      outline: none;
+      border-color: #4299e1;
+      box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.2);
+    }
+    
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 20px 0;
+      margin-bottom: 10px;
+    }
+    
+    .delete-btn {
+      background: linear-gradient(to right, #FF416C, #FF4B2B);
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+    
+    .delete-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 8px rgba(255, 65, 108, 0.4);
+    }
+    
+    .add-btn {
+      background: linear-gradient(to right, #56ab2f, #a8e063);
+      color: #fff;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      display: block;
+      margin: 30px auto 10px;
+      transition: all 0.3s;
+    }
+    
+    .add-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 12px rgba(86, 171, 47, 0.4);
+    }
+    
+    .location-link {
+      color: #3182ce;
+      text-decoration: underline;
+      cursor: pointer;
+      font-weight: 500;
+      padding: 8px 0;
+      display: inline-block;
+      transition: color 0.2s;
+      margin-top: 5px;
+    }
+    
+    .location-link:hover {
+      color: #2c5aa0;
+    }
+    
+    .location-input {
+      font-size: 18px;
+      font-weight: bold;
+      text-align: center;
+      margin: 0;
+      padding: 12px;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      flex-grow: 1;
+      margin-right: 15px;
+      min-height: 50px;
+    }
+
+    /* Print Styles for A4 Landscape */
+    @media print {
+      @page {
+        size: A4 landscape;
+        margin: 15mm;
+      }
+      
+      body {
+        background: white !important;
+        margin: 0;
+        padding: 0;
+        font-family: 'Times New Roman', Times, serif;
+      }
+      
+      .container {
+        max-width: none;
+        margin: 0;
+        padding: 0;
+        background: white;
+        box-shadow: none;
+      }
+      
+      .add-btn, .delete-btn {
+        display: none !important;
+      }
+      
+      .address-card {
+        box-shadow: none;
+        border: 1px solid #ddd;
+        margin-bottom: 20px;
+        page-break-inside: avoid;
+      }
+      
+      .address-header {
+        background: #f0f0f0 !important;
+        color: black !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      
+      h2 {
+        color: black;
+      }
+      
+      .location-link::after {
+        content: " (" attr(href) ")";
+        font-weight: normal;
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>📍 Professional Address Manager</h2>
+    <div id="addressContainer"></div>
+    <button class="add-btn" onclick="addAddress()">➕ Add New Address</button>
+  </div>
+
+  <script>
+    let addresses = JSON.parse(localStorage.getItem("addresses")) || [];
+
+    function saveData() {
+      localStorage.setItem("addresses", JSON.stringify(addresses));
+    }
+
+    function renderAddresses() {
+      const container = document.getElementById("addressContainer");
+      container.innerHTML = "";
+      
+      addresses.forEach((address, index) => {
+        const card = document.createElement("div");
+        card.className = "address-card";
+
+        // Colored header with gradient based on index
+        const header = document.createElement("div");
+        header.className = "address-header";
+        
+        // Generate different colors for different cards
+        const hue = (index * 137.5) % 360;
+        header.style.background = `linear-gradient(90deg, hsl(${hue}, 70%, 65%), hsl(${hue + 20}, 80%, 55%))`;
+        header.innerText = address.location || "New Location";
+        card.appendChild(header);
+
+        // Top bar with delete option
+        const topBar = document.createElement("div");
+        topBar.className = "top-bar";
+        
+        const locInput = document.createElement("input");
+        locInput.className = "location-input";
+        locInput.value = address.location || "";
+        locInput.placeholder = "Enter Location Name";
+        
+        // Use event listener with debouncing to prevent focus loss
+        let locationTimeout;
+        locInput.addEventListener('input', (e) => {
+          clearTimeout(locationTimeout);
+          locationTimeout = setTimeout(() => {
+            updateField(index, "location", e.target.value);
+          }, 500);
+        });
+        
+        const delBtn = document.createElement("button");
+        delBtn.className = "delete-btn";
+        delBtn.innerText = "Delete";
+        delBtn.onclick = () => {
+          if(confirm("Are you sure you want to delete this address?")) {
+            addresses.splice(index, 1);
+            saveData();
+            renderAddresses();
+          }
+        };
+        
+        topBar.appendChild(locInput);
+        topBar.appendChild(delBtn);
+        card.appendChild(topBar);
+
+        // Two column form
+        const body = document.createElement("div");
+        body.className = "address-body";
+
+        // Column 1
+        const col1 = document.createElement("div");
+        col1.className = "column";
+        
+        // Entity Name
+        const entityGroup = document.createElement("div");
+        entityGroup.className = "input-group";
+        entityGroup.innerHTML = `
+          <div class="input-label">Entity Name</div>
+          <input type="text" placeholder="Enter entity name" value="${escapeHtml(address.entity||"")}" 
+            data-index="${index}" data-field="entity">
+        `;
+        
+        // Contact Person Email
+        const emailGroup = document.createElement("div");
+        emailGroup.className = "input-group";
+        emailGroup.innerHTML = `
+          <div class="input-label">Contact Person Email</div>
+          <input type="email" placeholder="Enter email address" value="${escapeHtml(address.email||"")}" 
+            data-index="${index}" data-field="email">
+        `;
+        
+        // Address Line 1
+        const address1Group = document.createElement("div");
+        address1Group.className = "input-group";
+        address1Group.innerHTML = `
+          <div class="input-label">Address Line 1</div>
+          <textarea placeholder="Enter primary address" data-index="${index}" data-field="address1">${escapeHtml(address.address1||"")}</textarea>
+        `;
+        
+        col1.appendChild(entityGroup);
+        col1.appendChild(emailGroup);
+        col1.appendChild(address1Group);
+
+        // Column 2
+        const col2 = document.createElement("div");
+        col2.className = "column";
+        
+        // Contact Person Name
+        const contactNameGroup = document.createElement("div");
+        contactNameGroup.className = "input-group";
+        contactNameGroup.innerHTML = `
+          <div class="input-label">Contact Person Name</div>
+          <input type="text" placeholder="Enter contact name" value="${escapeHtml(address.contactName||"")}" 
+            data-index="${index}" data-field="contactName">
+        `;
+        
+        // Contact Person Number
+        const phoneGroup = document.createElement("div");
+        phoneGroup.className = "input-group";
+        phoneGroup.innerHTML = `
+          <div class="input-label">Contact Person Number</div>
+          <input type="text" placeholder="Enter phone number" value="${escapeHtml(address.phone||"")}" 
+            data-index="${index}" data-field="phone">
+        `;
+        
+        // Address Line 2 (with link support)
+        const address2Group = document.createElement("div");
+        address2Group.className = "input-group";
+        address2Group.innerHTML = `
+          <div class="input-label">Address Line 2 (paste link here)</div>
+          <textarea placeholder="Paste location link or additional address info" data-index="${index}" data-field="address2">${escapeHtml(address.address2||"")}</textarea>
+        `;
+        
+        // Comment Field
+        const commentGroup = document.createElement("div");
+        commentGroup.className = "input-group";
+        commentGroup.innerHTML = `
+          <div class="input-label">Comments</div>
+          <textarea placeholder="Enter any additional comments" data-index="${index}" data-field="comment">${escapeHtml(address.comment||"")}</textarea>
+        `;
+        
+        col2.appendChild(contactNameGroup);
+        col2.appendChild(phoneGroup);
+        col2.appendChild(address2Group);
+        col2.appendChild(commentGroup);
+
+        body.appendChild(col1);
+        body.appendChild(col2);
+        card.appendChild(body);
+
+        // Add link display if address2 contains a URL
+        if (address.address2 && isUrl(address.address2)) {
+          const linkContainer = document.createElement("div");
+          linkContainer.style.padding = "0 20px 15px 20px";
+          linkContainer.innerHTML = `
+            <a class="location-link" href="${escapeHtml(address.address2)}" target="_blank">🌐 Open Location Link</a>
+          `;
+          card.appendChild(linkContainer);
+        }
+
+        container.appendChild(card);
+      });
+
+      // Add event listeners to all input fields
+      attachInputEvents();
+    }
+
+    function isUrl(string) {
+      try {
+        new URL(string);
+        return true;
+      } catch (_) {
+        return false;
+      }
+    }
+
+    function escapeHtml(unsafe) {
+      if (!unsafe) return '';
+      return unsafe
+        .toString()
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function attachInputEvents() {
+      // Use event delegation for efficient input handling
+      document.querySelectorAll('input, textarea').forEach(element => {
+        if (element.hasAttribute('data-index')) {
+          // Remove existing event listeners to prevent duplicates
+          element.replaceWith(element.cloneNode(true));
+        }
+      });
+
+      // Reattach events to all inputs
+      document.addEventListener('input', function(e) {
+        if (e.target.matches('input, textarea') && e.target.hasAttribute('data-index')) {
+          const index = parseInt(e.target.getAttribute('data-index'));
+          const field = e.target.getAttribute('data-field');
+          const value = e.target.value;
+          
+          updateField(index, field, value);
+        }
+      });
+    }
+
+    function updateField(index, field, value) {
+      addresses[index][field] = value;
+      saveData();
+      
+      // Only re-render if location changed (for header) or address2 changed (for link display)
+      if (field === 'location' || field === 'address2') {
+        renderAddresses();
+      }
+    }
+
+    function addAddress() {
+      addresses.push({ 
+        entity: "", 
+        contactName: "", 
+        email: "", 
+        phone: "", 
+        address1: "", 
+        address2: "", 
+        location: "New Location", 
+        comment: "",
+        color: "#007BFF" 
+      });
+      saveData();
+      renderAddresses();
+    }
+
+    // Initialize
+    renderAddresses();
+  </script>
+</body>
+</html>
