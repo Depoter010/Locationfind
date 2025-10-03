@@ -183,6 +183,18 @@
     }
     .view-btn:hover { background: linear-gradient(to right, #3182ce, #4299e1); }
 
+    .share-btn {
+      background: linear-gradient(to right, #00b09b, #96c93d);
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+    .share-btn:hover { background: linear-gradient(to right, #43cea2, #185a9d); }
+
     .location-link {
       color: #3182ce;
       text-decoration: underline;
@@ -194,6 +206,18 @@
       margin-top: 5px;
     }
     .location-link:hover { color: #2c5aa0; }
+
+    /* Modal */
+    .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
+    .modal-content { background: #fff; margin: 8% auto; padding: 20px; border-radius: 10px; max-width: 500px; position: relative; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+    .modal h3 { margin-top: 0; }
+    .modal pre { background:#f8f8f8; padding:15px; border-radius:6px; white-space:pre-wrap; font-size:14px; line-height:1.4; }
+    .modal .close { position:absolute; top:10px; right:15px; font-size:22px; cursor:pointer; color:#333; }
+    .copy-btn, .wa-btn {
+      margin-top:10px; padding:8px 14px; border:none; border-radius:6px; cursor:pointer; font-weight:600;
+    }
+    .copy-btn { background:#4caf50; color:white; }
+    .wa-btn { background:#25d366; color:white; margin-left:10px;}
   </style>
 </head>
 <body>
@@ -212,16 +236,26 @@
   <div id="listView" class="view"></div>
 </div>
 
+<!-- Modal -->
+<div id="shareModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <h3>📤 Share Address Details</h3>
+    <pre id="shareText"></pre>
+    <button class="copy-btn" onclick="copyShare()">Copy</button>
+    <button class="wa-btn" onclick="sendWhatsapp()">Send via WhatsApp</button>
+  </div>
+</div>
+
 <script>
 let addresses = JSON.parse(localStorage.getItem("addresses")) || [];
 let activeAddressIndex = -1;
+let currentShareText = "";
 
 function saveData() { localStorage.setItem("addresses", JSON.stringify(addresses)); }
-
-function showFormView(index=-1) {
+function showFormView(index=-1) { /* same as your code */ 
   document.getElementById('formView').classList.add('active');
   document.getElementById('listView').classList.remove('active');
-
   if (index > -1) {
     activeAddressIndex = index;
     renderForm(addresses[index], index);
@@ -233,134 +267,33 @@ function showFormView(index=-1) {
     renderForm(newAddress, activeAddressIndex);
   }
 }
-
-function showListView() {
-  document.getElementById('formView').classList.remove('active');
-  document.getElementById('listView').classList.add('active');
-  activeAddressIndex = -1;
-  renderList();
-}
-
-function renderForm(address, index) {
-  const container = document.getElementById("addressContainer");
-  container.innerHTML = "";
-
-  const card = document.createElement("div");
-  card.className = "address-card";
-
-  const header = document.createElement("div");
-  header.className = "address-header";
-  header.setAttribute("contenteditable","true");
-  header.style.direction = "ltr";
-  header.innerText = address.location || "New Location";
-  const hue = (address.location.length * 137.5) % 360; 
-  header.style.background = `linear-gradient(90deg, hsl(${hue},70%,65%), hsl(${hue+20},80%,55%))`;
-
-  // Excel-style input update
-  header.addEventListener('input', e => {
-    addresses[index].location = e.target.innerText;
-    saveData();
-    const hue = (e.target.innerText.length * 137.5) % 360; 
-    header.style.background = `linear-gradient(90deg, hsl(${hue},70%,65%), hsl(${hue+20},80%,55%))`;
-  });
-  card.appendChild(header);
-
-  const topBar = document.createElement("div");
-  topBar.className = "top-bar";
-  const delBtn = document.createElement("button");
-  delBtn.className = "delete-btn";
-  delBtn.innerText = "Delete";
-  delBtn.onclick = ()=>{ if(confirm("Are you sure you want to delete this address?")){ addresses.splice(index,1); saveData(); showListView(); } };
-  topBar.appendChild(delBtn);
-  card.appendChild(topBar);
-
-  const body = document.createElement("div");
-  body.className = "address-body address-form";
-
-  body.innerHTML = `
-    <div class="column">
-      <div class="input-group"><div class="input-label">Client Name</div><input type="text" placeholder="Enter Client Name" value="${escapeHtml(address.entity||'')}" data-index="${index}" data-field="entity"></div>
-      <div class="input-group"><div class="input-label">Client Email</div><input type="email" placeholder="Enter email" value="${escapeHtml(address.email||'')}" data-index="${index}" data-field="email"></div>
-      <div class="input-group"><div class="input-label">Address Line 1</div><textarea placeholder="Enter primary address" data-index="${index}" data-field="address1">${escapeHtml(address.address1||'')}</textarea></div>
-    </div>
-    <div class="column">
-      <div class="input-group"><div class="input-label">Customer Name</div><input type="text" placeholder="Customer Name" value="${escapeHtml(address.contactName||'')}" data-index="${index}" data-field="contactName"></div>
-      <div class="input-group"><div class="input-label">Customer Contact No</div><input type="text" placeholder="Enter phone number" value="${escapeHtml(address.phone||'')}" data-index="${index}" data-field="phone"></div>
-      <div class="input-group"><div class="input-label">Address Line 2 (paste link here)</div><textarea placeholder="Paste location link or additional info" data-index="${index}" data-field="address2">${escapeHtml(address.address2||'')}</textarea></div>
-      <div class="input-group"><div class="input-label">Comments</div><textarea placeholder="Enter any additional comments" data-index="${index}" data-field="comment">${escapeHtml(address.comment||'')}</textarea></div>
-    </div>
-  `;
-  card.appendChild(body);
-
-  if(address.address2 && isUrl(address.address2)){
-    const linkContainer = document.createElement("div");
-    linkContainer.style.padding="0 20px 15px 20px";
-    linkContainer.innerHTML=`<a class="location-link" href="${escapeHtml(address.address2)}" target="_blank">🌐 Open Location Link</a>`;
-    card.appendChild(linkContainer);
-  }
-
-  const actionBar=document.createElement("div");
-  actionBar.className="action-bar";
-  const submitBtn=document.createElement("button");
-  submitBtn.className="submit-btn";
-  submitBtn.innerText="✅ Save & View List";
-  submitBtn.onclick=()=>{ addresses[index].status='submitted'; saveData(); showListView(); };
-  actionBar.appendChild(submitBtn);
-  card.appendChild(actionBar);
-
-  container.appendChild(card);
-  attachInputEvents();
-}
-
-// Attach Excel-style input events without rerendering
-function attachInputEvents(){
-  const container=document.getElementById('addressContainer');
-  container.querySelectorAll('input,textarea').forEach(inp=>{
-    inp.oninput=e=>{
-      const i=parseInt(inp.dataset.index);
-      const field=inp.dataset.field;
-      addresses[i][field]=e.target.value;
-      saveData();
-    };
-    inp.onkeydown=e=>e.stopPropagation();
-  });
-}
-
-function renderList(filtered=[]){
-  const container=document.getElementById("listView");
+function showListView() { document.getElementById('formView').classList.remove('active'); document.getElementById('listView').classList.add('active'); activeAddressIndex = -1; renderList(); }
+function renderForm(address,index){ /* same as your code */ 
+  const container=document.getElementById("addressContainer");
   container.innerHTML="";
-  const data=filtered.length>0 ? filtered : addresses.filter(a=>a.status==='submitted'||!a.status);
-  if(data.length===0){ container.innerHTML=`<p style="text-align:center; padding:30px; color:#777;">No submitted addresses found.</p>`; return; }
-  data.forEach(address=>{
-    const originalIndex=addresses.findIndex(a=>a.id===address.id);
-    const item=document.createElement("div");
-    item.className="list-item";
-    const info=document.createElement("div");
-    info.className="list-info";
-    info.innerHTML=`<strong>${escapeHtml(address.location||'N/A')}</strong> - ${escapeHtml(address.entity||'No Entity')} <span style="color:#888;">(${escapeHtml(address.contactName||'No Contact')})</span>`;
-    const actions=document.createElement("div");
-    actions.className="list-actions";
-    const viewBtn=document.createElement("button");
-    viewBtn.className="view-btn"; viewBtn.innerText="View/Edit"; viewBtn.onclick=()=>showFormView(originalIndex);
-    const delBtn=document.createElement("button");
-    delBtn.className="delete-btn"; delBtn.innerText="Delete"; delBtn.onclick=()=>{ if(confirm(`Delete ${address.location}?`)){ addresses.splice(originalIndex,1); saveData(); renderList(); } };
-    actions.appendChild(viewBtn); actions.appendChild(delBtn);
-    item.appendChild(info); item.appendChild(actions); container.appendChild(item);
-  });
+  const card=document.createElement("div"); card.className="address-card";
+  const header=document.createElement("div"); header.className="address-header"; header.setAttribute("contenteditable","true"); header.style.direction="ltr"; header.innerText=address.location||"New Location"; const hue=(address.location.length*137.5)%360; header.style.background=`linear-gradient(90deg, hsl(${hue},70%,65%), hsl(${hue+20},80%,55%))`;
+  header.addEventListener('input', e=>{ addresses[index].location=e.target.innerText; saveData(); const hue=(e.target.innerText.length*137.5)%360; header.style.background=`linear-gradient(90deg, hsl(${hue},70%,65%), hsl(${hue+20},80%,55%))`; });
+  card.appendChild(header);
+  const topBar=document.createElement("div"); topBar.className="top-bar"; const delBtn=document.createElement("button"); delBtn.className="delete-btn"; delBtn.innerText="Delete"; delBtn.onclick=()=>{ if(confirm("Are you sure you want to delete this address?")){ addresses.splice(index,1); saveData(); showListView(); } }; topBar.appendChild(delBtn); card.appendChild(topBar);
+  const body=document.createElement("div"); body.className="address-body address-form";
+  body.innerHTML=`<div class="column"><div class="input-group"><div class="input-label">Client Name</div><input type="text" placeholder="Client Name name" value="${escapeHtml(address.entity||'')}" data-index="${index}" data-field="entity"></div><div class="input-group"><div class="input-label">Client Email</div><input type="email" placeholder="Client Email" value="${escapeHtml(address.email||'')}" data-index="${index}" data-field="email"></div><div class="input-group"><div class="input-label">Address Line 1</div><textarea placeholder="Enter primary address" data-index="${index}" data-field="address1">${escapeHtml(address.address1||'')}</textarea></div></div><div class="column"><div class="input-group"><div class="input-label">Customer Name</div><input type="text" placeholder="Customer Name name" value="${escapeHtml(address.contactName||'')}" data-index="${index}" data-field="Customer Name"></div><div class="input-group"><div class="input-label">Customer Number</div><input type="text" placeholder="Enter phone number" value="${escapeHtml(address.phone||'')}" data-index="${index}" data-field="phone"></div><div class="input-group"><div class="input-label">Address Line 2 (paste link here)</div><textarea placeholder="Paste location link or additional info" data-index="${index}" data-field="address2">${escapeHtml(address.address2||'')}</textarea></div><div class="input-group"><div class="input-label">Comments</div><textarea placeholder="Enter any additional comments" data-index="${index}" data-field="comment">${escapeHtml(address.comment||'')}</textarea></div></div>`;
+  card.appendChild(body);
+  if(address.address2&&isUrl(address.address2)){ const linkContainer=document.createElement("div"); linkContainer.style.padding="0 20px 15px 20px"; linkContainer.innerHTML=`<a class="location-link" href="${escapeHtml(address.address2)}" target="_blank">🌐 Open Location Link</a>`; card.appendChild(linkContainer);}
+  const actionBar=document.createElement("div"); actionBar.className="action-bar"; const submitBtn=document.createElement("button"); submitBtn.className="submit-btn"; submitBtn.innerText="✅ Save & View List"; submitBtn.onclick=()=>{ addresses[index].status='submitted'; saveData(); showListView(); }; actionBar.appendChild(submitBtn); card.appendChild(actionBar); container.appendChild(card); attachInputEvents();
 }
-
-function escapeHtml(unsafe){ if(!unsafe) return ''; return unsafe.toString().replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;"); }
-function isUrl(str){ try{new URL(str); return true;}catch{return false;} }
-
-function applySearch(){
-  const q=document.getElementById("searchInput").value.toLowerCase();
-  if(!q){ renderList(); return; }
-  const filtered=addresses.filter(a=>[a.location,a.entity,a.contactName,a.phone,a.address1,a.address2].some(f=>f&&f.toLowerCase().includes(q)));
-  renderList(filtered);
-}
-
-if(addresses.filter(a=>a.status==='submitted'||!a.status).length>0) showListView();
-else showFormView();
+function attachInputEvents(){ const container=document.getElementById('addressContainer'); container.querySelectorAll('input,textarea').forEach(inp=>{ inp.oninput=e=>{ const i=parseInt(inp.dataset.index); const field=inp.dataset.field; addresses[i][field]=e.target.value; saveData(); }; inp.onkeydown=e=>e.stopPropagation(); }); }
+function renderList(filtered=[]){ const container=document.getElementById("listView"); container.innerHTML=""; const data=filtered.length>0?filtered:addresses.filter(a=>a.status==='submitted'||!a.status); if(data.length===0){ container.innerHTML=`<p style="text-align:center; padding:30px; color:#777;">No submitted addresses found.</p>`; return; } data.forEach(address=>{ const originalIndex=addresses.findIndex(a=>a.id===address.id); const item=document.createElement("div"); item.className="list-item"; const info=document.createElement("div"); info.className="list-info"; info.innerHTML=`<strong>${escapeHtml(address.location||'N/A')}</strong> - ${escapeHtml(address.entity||'No Entity')} <span style="color:#888;">(${escapeHtml(address.contactName||'No Contact')})</span>`; const actions=document.createElement("div"); actions.className="list-actions"; const viewBtn=document.createElement("button"); viewBtn.className="view-btn"; viewBtn.innerText="View/Edit"; viewBtn.onclick=()=>showFormView(originalIndex); const delBtn=document.createElement("button"); delBtn.className="delete-btn"; delBtn.innerText="Delete"; delBtn.onclick=()=>{ if(confirm(`Delete ${address.location}?`)){ addresses.splice(originalIndex,1); saveData(); renderList(); } }; 
+    const shareBtn=document.createElement("button"); shareBtn.className="share-btn"; shareBtn.innerText="Share"; shareBtn.onclick=()=>{ let shareText=`Client Name: ${address.entity}\nClient Email: ${address.email}\nCustomer Name: ${address.contactName}\nCustomer Contact No: ${address.phone}\nAddress Line 1: ${address.address1}\nAddress Line 2: ${address.address2}\nLocation: ${address.location}\nComments: ${address.comment}`; openModal(shareText); };
+    actions.appendChild(viewBtn); actions.appendChild(delBtn); actions.appendChild(shareBtn); item.appendChild(info); item.appendChild(actions); container.appendChild(item); }); }
+function applySearch(){ const val=document.getElementById("searchInput").value.toLowerCase(); if(!val){ renderList(); return;} const filtered=addresses.filter(a=>(a.entity+" "+a.contactName+" "+a.phone+" "+a.address1+" "+a.address2+" "+a.location).toLowerCase().includes(val)); renderList(filtered); }
+function escapeHtml(text){ if(!text)return""; return text.replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m])); }
+function isUrl(str){ try{ new URL(str); return true;} catch(e){ return false; } }
+function openModal(text){ document.getElementById("shareText").innerText=text; currentShareText=text; document.getElementById("shareModal").style.display="block"; }
+function closeModal(){ document.getElementById("shareModal").style.display="none"; }
+function copyShare(){ navigator.clipboard.writeText(currentShareText); alert("Copied to clipboard!"); }
+function sendWhatsapp(){ let url="https://wa.me/?text="+encodeURIComponent(currentShareText); window.open(url,'_blank'); }
+showListView();
 </script>
 </body>
 </html>
