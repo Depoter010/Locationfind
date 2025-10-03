@@ -11,7 +11,6 @@
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       min-height: 100vh;
     }
-    
     .container {
       max-width: 1200px;
       margin: 0 auto;
@@ -20,7 +19,6 @@
       padding: 25px;
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
     }
-    
     h2 {
       text-align: center;
       color: #2d3748;
@@ -28,7 +26,20 @@
       font-size: 28px;
       font-weight: 600;
     }
-    
+
+    /* Search Bar */
+    .search-bar {
+      width: 100%;
+      padding: 12px 1px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+
+    .view { display: none; }
+    .view.active { display: block; }
+
     .address-card {
       background: #fff;
       margin-bottom: 30px;
@@ -37,40 +48,37 @@
       overflow: hidden;
       transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
-    
     .address-card:hover {
       transform: translateY(-5px);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
     }
-    
+
+    /* Editable Header Style */
     .address-header {
       font-size: 22px;
       font-weight: bold;
       padding: 15px;
       color: #fff;
-      text-align: center;
+      text-align: left;
+      direction: ltr;
+      cursor: text;
       background: linear-gradient(90deg, #FF9A8B 0%, #FF6A88 55%, #FF99AC 100%);
+      transition: background 0.3s;
     }
-    
+    .address-header:focus {
+      outline: 3px solid #4299e1;
+      outline-offset: -3px;
+    }
+
     .address-body {
       display: flex;
       flex-direction: row;
       padding: 20px;
       gap: 25px;
     }
-    
-    .column {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-    }
-    
-    .input-group {
-      display: flex;
-      flex-direction: column;
-    }
-    
+
+    .column { flex: 1; display: flex; flex-direction: column; gap: 15px; }
+    .input-group { display: flex; flex-direction: column; }
     .input-label {
       font-size: 14px;
       font-weight: 600;
@@ -78,7 +86,7 @@
       margin-bottom: 5px;
       padding-left: 3px;
     }
-    
+
     .address-form input, .address-form textarea {
       width: 100%;
       padding: 14px;
@@ -88,23 +96,22 @@
       font-size: 15px;
       transition: border-color 0.3s, box-shadow 0.3s;
       box-sizing: border-box;
-      min-height: 50px;
+      min-height: 45px; 
     }
-    
+    .address-form textarea { min-height: 80px; }
     .address-form input:focus, .address-form textarea:focus {
       outline: none;
       border-color: #4299e1;
-      box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.2);
+      box-shadow: 0 0 0 3px rgba(66,153,225,0.2);
     }
-    
+
     .top-bar {
       display: flex;
-      justify-content: space-between;
+      justify-content: flex-end;
       align-items: center;
       padding: 15px 20px 0;
       margin-bottom: 10px;
     }
-    
     .delete-btn {
       background: linear-gradient(to right, #FF416C, #FF4B2B);
       color: #fff;
@@ -115,13 +122,27 @@
       font-weight: 600;
       transition: all 0.3s;
     }
-    
-    .delete-btn:hover {
-      transform: scale(1.05);
-      box-shadow: 0 4px 8px rgba(255, 65, 108, 0.4);
+    .delete-btn:hover { transform: scale(1.05); box-shadow: 0 4px 8px rgba(255,65,108,0.4); }
+
+    .action-bar {
+      display: flex;
+      justify-content: flex-end;
+      gap: 15px;
+      padding: 0 20px 20px;
     }
-    
-    .add-btn {
+    .submit-btn {
+      background: linear-gradient(to right, #2c3e50, #4a69bd);
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+    .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(44,62,80,0.4); }
+
+    .add-new-header-btn {
       background: linear-gradient(to right, #56ab2f, #a8e063);
       color: #fff;
       border: none;
@@ -130,16 +151,38 @@
       cursor: pointer;
       font-size: 16px;
       font-weight: 600;
-      display: block;
-      margin: 30px auto 10px;
       transition: all 0.3s;
     }
-    
-    .add-btn:hover {
-      transform: scale(1.05);
-      box-shadow: 0 6px 12px rgba(86, 171, 47, 0.4);
+    .add-new-header-btn:hover { transform: scale(1.02); box-shadow: 0 4px 8px rgba(86,171,47,0.4); }
+
+    #listView { padding: 10px 0; }
+    .list-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 20px;
+      margin-bottom: 10px;
+      background: #f7f7f7;
+      border-radius: 8px;
+      border-left: 5px solid #4299e1;
+      transition: background 0.2s;
     }
-    
+    .list-item:hover { background: #f0f0f0; }
+    .list-info { flex-grow: 1; font-size: 16px; color: #2d3748; }
+    .list-info strong { font-weight: 600; color: #1a202c; }
+    .list-actions button { margin-left: 10px; }
+    .view-btn {
+      background: linear-gradient(to right, #4299e1, #63b3ed);
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+    .view-btn:hover { background: linear-gradient(to right, #3182ce, #4299e1); }
+
     .location-link {
       color: #3182ce;
       text-decoration: underline;
@@ -150,312 +193,174 @@
       transition: color 0.2s;
       margin-top: 5px;
     }
-    
-    .location-link:hover {
-      color: #2c5aa0;
-    }
-    
-    .location-input {
-      font-size: 18px;
-      font-weight: bold;
-      text-align: center;
-      margin: 0;
-      padding: 12px;
-      border: 2px solid #e2e8f0;
-      border-radius: 8px;
-      flex-grow: 1;
-      margin-right: 15px;
-      min-height: 50px;
-    }
-
-    /* Print Styles for A4 Landscape */
-    @media print {
-      @page {
-        size: A4 landscape;
-        margin: 15mm;
-      }
-      
-      body {
-        background: white !important;
-        margin: 0;
-        padding: 0;
-        font-family: 'Times New Roman', Times, serif;
-      }
-      
-      .container {
-        max-width: none;
-        margin: 0;
-        padding: 0;
-        background: white;
-        box-shadow: none;
-      }
-      
-      .add-btn, .delete-btn {
-        display: none !important;
-      }
-      
-      .address-card {
-        box-shadow: none;
-        border: 1px solid #ddd;
-        margin-bottom: 20px;
-        page-break-inside: avoid;
-      }
-      
-      .address-header {
-        background: #f0f0f0 !important;
-        color: black !important;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-      }
-      
-      h2 {
-        color: black;
-      }
-      
-      .location-link::after {
-        content: " (" attr(href) ")";
-        font-weight: normal;
-        font-size: 12px;
-      }
-    }
+    .location-link:hover { color: #2c5aa0; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>📍 Professional Address Manager</h2>
-    <div id="addressContainer"></div>
-    <button class="add-btn" onclick="addAddress()">➕ Add New Address</button>
+<div class="container">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+      <h2>📍 Professional Address Manager</h2>
+      <button class="add-new-header-btn" onclick="showFormView()">➕ Add New Address</button>
   </div>
 
-  <script>
-    let addresses = JSON.parse(localStorage.getItem("addresses")) || [];
+  <input type="text" id="searchInput" class="search-bar" placeholder="Search by name, phone, address, location..." oninput="applySearch()">
 
-    function saveData() {
-      localStorage.setItem("addresses", JSON.stringify(addresses));
-    }
+  <div id="formView" class="view active">
+      <div id="addressContainer"></div>
+  </div>
+  
+  <div id="listView" class="view"></div>
+</div>
 
-    function renderAddresses() {
-      const container = document.getElementById("addressContainer");
-      container.innerHTML = "";
-      
-      addresses.forEach((address, index) => {
-        const card = document.createElement("div");
-        card.className = "address-card";
+<script>
+let addresses = JSON.parse(localStorage.getItem("addresses")) || [];
+let activeAddressIndex = -1;
 
-        // Colored header with gradient based on index
-        const header = document.createElement("div");
-        header.className = "address-header";
-        
-        // Generate different colors for different cards
-        const hue = (index * 137.5) % 360;
-        header.style.background = `linear-gradient(90deg, hsl(${hue}, 70%, 65%), hsl(${hue + 20}, 80%, 55%))`;
-        header.innerText = address.location || "New Location";
-        card.appendChild(header);
+function saveData() { localStorage.setItem("addresses", JSON.stringify(addresses)); }
 
-        // Top bar with delete option
-        const topBar = document.createElement("div");
-        topBar.className = "top-bar";
-        
-        const locInput = document.createElement("input");
-        locInput.className = "location-input";
-        locInput.value = address.location || "";
-        locInput.placeholder = "Enter Location Name";
-        
-        // Use event listener with debouncing to prevent focus loss
-        let locationTimeout;
-        locInput.addEventListener('input', (e) => {
-          clearTimeout(locationTimeout);
-          locationTimeout = setTimeout(() => {
-            updateField(index, "location", e.target.value);
-          }, 500);
-        });
-        
-        const delBtn = document.createElement("button");
-        delBtn.className = "delete-btn";
-        delBtn.innerText = "Delete";
-        delBtn.onclick = () => {
-          if(confirm("Are you sure you want to delete this address?")) {
-            addresses.splice(index, 1);
-            saveData();
-            renderAddresses();
-          }
-        };
-        
-        topBar.appendChild(locInput);
-        topBar.appendChild(delBtn);
-        card.appendChild(topBar);
+function showFormView(index=-1) {
+  document.getElementById('formView').classList.add('active');
+  document.getElementById('listView').classList.remove('active');
 
-        // Two column form
-        const body = document.createElement("div");
-        body.className = "address-body";
+  if (index > -1) {
+    activeAddressIndex = index;
+    renderForm(addresses[index], index);
+  } else {
+    activeAddressIndex = addresses.length;
+    const newAddress = { id: Date.now(), entity:"", contactName:"", email:"", phone:"", address1:"", address2:"", location:"New Location", comment:"", status:"draft"};
+    addresses.push(newAddress);
+    saveData();
+    renderForm(newAddress, activeAddressIndex);
+  }
+}
 
-        // Column 1
-        const col1 = document.createElement("div");
-        col1.className = "column";
-        
-        // Entity Name
-        const entityGroup = document.createElement("div");
-        entityGroup.className = "input-group";
-        entityGroup.innerHTML = `
-          <div class="input-label">Entity Name</div>
-          <input type="text" placeholder="Enter entity name" value="${escapeHtml(address.entity||"")}" 
-            data-index="${index}" data-field="entity">
-        `;
-        
-        // Contact Person Email
-        const emailGroup = document.createElement("div");
-        emailGroup.className = "input-group";
-        emailGroup.innerHTML = `
-          <div class="input-label">Contact Person Email</div>
-          <input type="email" placeholder="Enter email address" value="${escapeHtml(address.email||"")}" 
-            data-index="${index}" data-field="email">
-        `;
-        
-        // Address Line 1
-        const address1Group = document.createElement("div");
-        address1Group.className = "input-group";
-        address1Group.innerHTML = `
-          <div class="input-label">Address Line 1</div>
-          <textarea placeholder="Enter primary address" data-index="${index}" data-field="address1">${escapeHtml(address.address1||"")}</textarea>
-        `;
-        
-        col1.appendChild(entityGroup);
-        col1.appendChild(emailGroup);
-        col1.appendChild(address1Group);
+function showListView() {
+  document.getElementById('formView').classList.remove('active');
+  document.getElementById('listView').classList.add('active');
+  activeAddressIndex = -1;
+  renderList();
+}
 
-        // Column 2
-        const col2 = document.createElement("div");
-        col2.className = "column";
-        
-        // Contact Person Name
-        const contactNameGroup = document.createElement("div");
-        contactNameGroup.className = "input-group";
-        contactNameGroup.innerHTML = `
-          <div class="input-label">Contact Person Name</div>
-          <input type="text" placeholder="Enter contact name" value="${escapeHtml(address.contactName||"")}" 
-            data-index="${index}" data-field="contactName">
-        `;
-        
-        // Contact Person Number
-        const phoneGroup = document.createElement("div");
-        phoneGroup.className = "input-group";
-        phoneGroup.innerHTML = `
-          <div class="input-label">Contact Person Number</div>
-          <input type="text" placeholder="Enter phone number" value="${escapeHtml(address.phone||"")}" 
-            data-index="${index}" data-field="phone">
-        `;
-        
-        // Address Line 2 (with link support)
-        const address2Group = document.createElement("div");
-        address2Group.className = "input-group";
-        address2Group.innerHTML = `
-          <div class="input-label">Address Line 2 (paste link here)</div>
-          <textarea placeholder="Paste location link or additional address info" data-index="${index}" data-field="address2">${escapeHtml(address.address2||"")}</textarea>
-        `;
-        
-        // Comment Field
-        const commentGroup = document.createElement("div");
-        commentGroup.className = "input-group";
-        commentGroup.innerHTML = `
-          <div class="input-label">Comments</div>
-          <textarea placeholder="Enter any additional comments" data-index="${index}" data-field="comment">${escapeHtml(address.comment||"")}</textarea>
-        `;
-        
-        col2.appendChild(contactNameGroup);
-        col2.appendChild(phoneGroup);
-        col2.appendChild(address2Group);
-        col2.appendChild(commentGroup);
+function renderForm(address, index) {
+  const container = document.getElementById("addressContainer");
+  container.innerHTML = "";
 
-        body.appendChild(col1);
-        body.appendChild(col2);
-        card.appendChild(body);
+  const card = document.createElement("div");
+  card.className = "address-card";
 
-        // Add link display if address2 contains a URL
-        if (address.address2 && isUrl(address.address2)) {
-          const linkContainer = document.createElement("div");
-          linkContainer.style.padding = "0 20px 15px 20px";
-          linkContainer.innerHTML = `
-            <a class="location-link" href="${escapeHtml(address.address2)}" target="_blank">🌐 Open Location Link</a>
-          `;
-          card.appendChild(linkContainer);
-        }
+  const header = document.createElement("div");
+  header.className = "address-header";
+  header.setAttribute("contenteditable","true");
+  header.style.direction = "ltr";
+  header.innerText = address.location || "New Location";
+  const hue = (address.location.length * 137.5) % 360; 
+  header.style.background = `linear-gradient(90deg, hsl(${hue},70%,65%), hsl(${hue+20},80%,55%))`;
 
-        container.appendChild(card);
-      });
+  // Excel-style input update
+  header.addEventListener('input', e => {
+    addresses[index].location = e.target.innerText;
+    saveData();
+    const hue = (e.target.innerText.length * 137.5) % 360; 
+    header.style.background = `linear-gradient(90deg, hsl(${hue},70%,65%), hsl(${hue+20},80%,55%))`;
+  });
+  card.appendChild(header);
 
-      // Add event listeners to all input fields
-      attachInputEvents();
-    }
+  const topBar = document.createElement("div");
+  topBar.className = "top-bar";
+  const delBtn = document.createElement("button");
+  delBtn.className = "delete-btn";
+  delBtn.innerText = "Delete";
+  delBtn.onclick = ()=>{ if(confirm("Are you sure you want to delete this address?")){ addresses.splice(index,1); saveData(); showListView(); } };
+  topBar.appendChild(delBtn);
+  card.appendChild(topBar);
 
-    function isUrl(string) {
-      try {
-        new URL(string);
-        return true;
-      } catch (_) {
-        return false;
-      }
-    }
+  const body = document.createElement("div");
+  body.className = "address-body address-form";
 
-    function escapeHtml(unsafe) {
-      if (!unsafe) return '';
-      return unsafe
-        .toString()
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-    }
+  body.innerHTML = `
+    <div class="column">
+      <div class="input-group"><div class="input-label">Client Name</div><input type="text" placeholder="Enter Client Name" value="${escapeHtml(address.entity||'')}" data-index="${index}" data-field="entity"></div>
+      <div class="input-group"><div class="input-label">Client Email</div><input type="email" placeholder="Enter email" value="${escapeHtml(address.email||'')}" data-index="${index}" data-field="email"></div>
+      <div class="input-group"><div class="input-label">Address Line 1</div><textarea placeholder="Enter primary address" data-index="${index}" data-field="address1">${escapeHtml(address.address1||'')}</textarea></div>
+    </div>
+    <div class="column">
+      <div class="input-group"><div class="input-label">Customer Name</div><input type="text" placeholder="Customer Name" value="${escapeHtml(address.contactName||'')}" data-index="${index}" data-field="contactName"></div>
+      <div class="input-group"><div class="input-label">Customer Contact No</div><input type="text" placeholder="Enter phone number" value="${escapeHtml(address.phone||'')}" data-index="${index}" data-field="phone"></div>
+      <div class="input-group"><div class="input-label">Address Line 2 (paste link here)</div><textarea placeholder="Paste location link or additional info" data-index="${index}" data-field="address2">${escapeHtml(address.address2||'')}</textarea></div>
+      <div class="input-group"><div class="input-label">Comments</div><textarea placeholder="Enter any additional comments" data-index="${index}" data-field="comment">${escapeHtml(address.comment||'')}</textarea></div>
+    </div>
+  `;
+  card.appendChild(body);
 
-    function attachInputEvents() {
-      // Use event delegation for efficient input handling
-      document.querySelectorAll('input, textarea').forEach(element => {
-        if (element.hasAttribute('data-index')) {
-          // Remove existing event listeners to prevent duplicates
-          element.replaceWith(element.cloneNode(true));
-        }
-      });
+  if(address.address2 && isUrl(address.address2)){
+    const linkContainer = document.createElement("div");
+    linkContainer.style.padding="0 20px 15px 20px";
+    linkContainer.innerHTML=`<a class="location-link" href="${escapeHtml(address.address2)}" target="_blank">🌐 Open Location Link</a>`;
+    card.appendChild(linkContainer);
+  }
 
-      // Reattach events to all inputs
-      document.addEventListener('input', function(e) {
-        if (e.target.matches('input, textarea') && e.target.hasAttribute('data-index')) {
-          const index = parseInt(e.target.getAttribute('data-index'));
-          const field = e.target.getAttribute('data-field');
-          const value = e.target.value;
-          
-          updateField(index, field, value);
-        }
-      });
-    }
+  const actionBar=document.createElement("div");
+  actionBar.className="action-bar";
+  const submitBtn=document.createElement("button");
+  submitBtn.className="submit-btn";
+  submitBtn.innerText="✅ Save & View List";
+  submitBtn.onclick=()=>{ addresses[index].status='submitted'; saveData(); showListView(); };
+  actionBar.appendChild(submitBtn);
+  card.appendChild(actionBar);
 
-    function updateField(index, field, value) {
-      addresses[index][field] = value;
+  container.appendChild(card);
+  attachInputEvents();
+}
+
+// Attach Excel-style input events without rerendering
+function attachInputEvents(){
+  const container=document.getElementById('addressContainer');
+  container.querySelectorAll('input,textarea').forEach(inp=>{
+    inp.oninput=e=>{
+      const i=parseInt(inp.dataset.index);
+      const field=inp.dataset.field;
+      addresses[i][field]=e.target.value;
       saveData();
-      
-      // Only re-render if location changed (for header) or address2 changed (for link display)
-      if (field === 'location' || field === 'address2') {
-        renderAddresses();
-      }
-    }
+    };
+    inp.onkeydown=e=>e.stopPropagation();
+  });
+}
 
-    function addAddress() {
-      addresses.push({ 
-        entity: "", 
-        contactName: "", 
-        email: "", 
-        phone: "", 
-        address1: "", 
-        address2: "", 
-        location: "New Location", 
-        comment: "",
-        color: "#007BFF" 
-      });
-      saveData();
-      renderAddresses();
-    }
+function renderList(filtered=[]){
+  const container=document.getElementById("listView");
+  container.innerHTML="";
+  const data=filtered.length>0 ? filtered : addresses.filter(a=>a.status==='submitted'||!a.status);
+  if(data.length===0){ container.innerHTML=`<p style="text-align:center; padding:30px; color:#777;">No submitted addresses found.</p>`; return; }
+  data.forEach(address=>{
+    const originalIndex=addresses.findIndex(a=>a.id===address.id);
+    const item=document.createElement("div");
+    item.className="list-item";
+    const info=document.createElement("div");
+    info.className="list-info";
+    info.innerHTML=`<strong>${escapeHtml(address.location||'N/A')}</strong> - ${escapeHtml(address.entity||'No Entity')} <span style="color:#888;">(${escapeHtml(address.contactName||'No Contact')})</span>`;
+    const actions=document.createElement("div");
+    actions.className="list-actions";
+    const viewBtn=document.createElement("button");
+    viewBtn.className="view-btn"; viewBtn.innerText="View/Edit"; viewBtn.onclick=()=>showFormView(originalIndex);
+    const delBtn=document.createElement("button");
+    delBtn.className="delete-btn"; delBtn.innerText="Delete"; delBtn.onclick=()=>{ if(confirm(`Delete ${address.location}?`)){ addresses.splice(originalIndex,1); saveData(); renderList(); } };
+    actions.appendChild(viewBtn); actions.appendChild(delBtn);
+    item.appendChild(info); item.appendChild(actions); container.appendChild(item);
+  });
+}
 
-    // Initialize
-    renderAddresses();
-  </script>
+function escapeHtml(unsafe){ if(!unsafe) return ''; return unsafe.toString().replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;"); }
+function isUrl(str){ try{new URL(str); return true;}catch{return false;} }
+
+function applySearch(){
+  const q=document.getElementById("searchInput").value.toLowerCase();
+  if(!q){ renderList(); return; }
+  const filtered=addresses.filter(a=>[a.location,a.entity,a.contactName,a.phone,a.address1,a.address2].some(f=>f&&f.toLowerCase().includes(q)));
+  renderList(filtered);
+}
+
+if(addresses.filter(a=>a.status==='submitted'||!a.status).length>0) showListView();
+else showFormView();
+</script>
 </body>
 </html>
